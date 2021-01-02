@@ -50,6 +50,8 @@ public partial class MeshDebugger : EditorWindow
         public static GUIContent Tangents = new GUIContent("Tangents");
         public static int[] Surfaces = new int[] { 0, 1, 2, 3 };
 
+        internal static string UNREADABLE_MESH = "Mesh.isReadable = False. Mesh data is not stored in CPU-addressable memory.\nChange your import settings, or set Mesh.isReadable to True in order to access Mesh data.";
+
     }
 
     void OnGUI()
@@ -160,7 +162,16 @@ public partial class MeshDebugger : EditorWindow
         {
             EditorGUILayout.Space();
             if (m_Mesh)
-                EditorGUILayout.HelpBox(m_cpu.m_Features, MessageType.Info);
+            {
+                if (m_Mesh.isReadable)
+                {
+                    EditorGUILayout.HelpBox(m_cpu.m_Features, MessageType.Info);
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox(UI.UNREADABLE_MESH, MessageType.Warning);
+                }
+            }
             if (!m_UseHeatmap && (m_DebugVert != DebugVertice.None || m_DebugTris != DebugTriangle.None) && !IsSafeToDrawGUI())
                 EditorGUILayout.HelpBox("Verts / Triangle count are too large to be displayed with GUI index rendering.\nConsider set smaller section or enable Heatmap instead.", MessageType.Warning);
         }
